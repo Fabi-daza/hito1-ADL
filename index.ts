@@ -1,6 +1,7 @@
 import express from 'express'
 import authRoutes from './routes/auth'
 import privateRoutes from './routes/privateRoute'
+import products from './routes/products'
 
 
 const app = express();
@@ -10,6 +11,7 @@ app.use(express.json());
 
 app.use('/login', authRoutes);
 app.use('/', privateRoutes);
+app.use('/products', products);
 
 app.get("/", (req, res) => {
     res.send("Hola mundo en vista publica")
