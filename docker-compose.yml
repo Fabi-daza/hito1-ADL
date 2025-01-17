@@ -1,18 +1,24 @@
 version: '3.8'
+
 services:
   db:
     image: postgres:latest
-    container_name: postgres_db
-    restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 12345
-      POSTGRES_DB: mercadotech
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
+    env_file:
+      - .env
     volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./mercadotech.sql:/docker-entrypoint-initdb.d/mercadotech.sql
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
 
 volumes:
-  db_data:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
