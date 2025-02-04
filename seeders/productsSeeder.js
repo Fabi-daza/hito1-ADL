@@ -9,4 +9,13 @@ const seedProducts = async () => {
   console.log("Productos insertados correctamente.");
 };
 
-export default seedProducts;
+const deleteSeedProducts = async () => {
+  await Producto.destroy({
+    where: {
+      titulo: ["Teclado", "Notebook", "Ipad"],
+    },
+  });
+  console.log("Productos eliminados correctamente.");
+};
+
+export { seedProducts, deleteSeedProducts}
