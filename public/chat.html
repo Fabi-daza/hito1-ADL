@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat en Tiempo Real</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Usuario">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Iniciar Sesión</button>
+
+    <h2>Chat</h2>
+    <input type="text" id="message" placeholder="Escribe un mensaje">
+    <button onclick="sendMessage()">Enviar</button>
+    <ul id="messages"></ul>
+
+    <script>
+        let token = null;
+        let socket = null;
+
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/api/users/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message);
+
+                token = data.token;
+                localStorage.setItem("token", token);
+                alert("Login exitoso");
+
+                connectSocket();
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+
+        function connectSocket() {
+            if (!token) {
+                alert("Debes iniciar sesión primero.");
+                return;
+            }
+
+            socket = io({
+                auth: { token }
+            });
+
+            socket.on("connect", () => console.log("Conectado al chat"));
+            socket.on("message", (data) => {
+                const li = document.createElement("li");
+                li.textContent = `${data.user}: ${data.message}`;
+                document.getElementById("messages").appendChild(li);
+            });
+        }
+
+        function sendMessage() {
+            const message = document.getElementById("message").value;
+            if (!socket) {
+                alert("Debes conectarte al chat primero.");
+                return;
+            }
+
+            socket.emit("message", { message });
+            document.getElementById("message").value = "";
+        }
+    </script>
+</body>
+</html>

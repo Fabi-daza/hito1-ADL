@@ -6,7 +6,11 @@ const seedUsers = async () => {
 
     await Usuarios.bulkCreate([
         {
-            username: "admin",
+            username: "user1",
+            password: hashedPassword
+        },
+        {
+          username: "user2",
             password: hashedPassword
         }
     ])
